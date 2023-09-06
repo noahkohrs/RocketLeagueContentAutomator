@@ -98,7 +98,7 @@ def monitor_clip_directory(youtube):
 
 def handleToPostClip(youtube, name):
     valid_upload : bool = False
-    video_title = name[:-4] + TAGS
+    video_title = getVideoTitle() + TAGS
     print(f"Uploading {name} as {video_title}...")
     try :
         upload_video(youtube, os.path.join("toPost", name), title=video_title )
@@ -117,28 +117,14 @@ def handleToPostClip(youtube, name):
 def handleNewClip(name) :
     """Handle a new clip, resize it, rename it and move it to the toPost folder"""
     filename = resize_video(os.path.join(CLIP_DIR, name))
-    Name = getVideoTitle()
     #Copy the video to the toPost folder
-    os.rename(filename, os.path.join("toPost", Name + ".mp4"))
-    filename = os.path.join("toPost", filename)
-    print("Clip added as '%s' ..." % (Name))
-    # while not valid_upload:
-    #     time.sleep(10)
-    #     try :
-    #         upload_video(youtube, filename, title=Name)
-    #         valid_upload = True
-    #     except Exception as e:
-    #         print("Upload failed")
-    #         youtube = get_authenticated_service()
-    #         print("Retrying...")
-    # print("Upload successful ! Deleting temp file...")
-    
-    #os.remove(filename)
+    os.rename(filename, os.path.join("toPost", name + ".mp4"))
+    print("Clip added as '%s' ..." % (name))
 
 
 import random
 
-def getVideoTitle():
+def getVideoTitle() -> str:
     """Choisit un titre au hasard depuis un fichier."""
     
     with open(AUTO_TITLE_LIST, 'r', encoding="utf-8") as file:
@@ -184,5 +170,5 @@ if __name__ == '__main__':
         youtube = get_authenticated_service()
     # In case of crash, still upload the old clip
     if os.path.exists("new_short.mp4"):
-        os.remove("new_short.mp4")
+        os.rename("new_short.mp4", os.path.join("toPost", "new_short.mp4"))
     monitor_clip_directory(youtube)
