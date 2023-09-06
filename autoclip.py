@@ -77,11 +77,11 @@ def load_files():
     return files
 
 # Surveiller le dossier de clips
-def monitor_clip_directory(youtube):
+def monitor_clip_directory(youtube, sleep_time=20):
     files_already_seen = load_files()
     print(f"Les fichiers déjà vus sont : {files_already_seen}")
     while True:
-        time.sleep(15)
+        time.sleep(sleep_time)
         files_now = set(os.listdir(CLIP_DIR))
         #List theses files in a file
         save_files(files_now)
@@ -104,12 +104,16 @@ def handleToPostClip(youtube, name):
         upload_video(youtube, os.path.join("toPost", name), title=video_title )
         valid_upload = True
     except Exception as e:
-        print("Upload failed")
+        print("Upload failed (YouTube API error)")
         youtube = get_authenticated_service()
         print("Retrying...")
-        trys += 1
     if not valid_upload:
         print("Upload failed, post it manually")
+        print("Title :")
+        print('"""\n')
+        print(video_title)
+        print('\n"""')
+
     else:
         print("Upload successful ! Deleting temp file...")
         os.remove(os.path.join("toPost", name))
@@ -171,4 +175,4 @@ if __name__ == '__main__':
     # In case of crash, still upload the old clip
     if os.path.exists("new_short.mp4"):
         os.rename("new_short.mp4", os.path.join("toPost", "new_short.mp4"))
-    monitor_clip_directory(youtube)
+    monitor_clip_directory(youtube, sleep_time=45)
