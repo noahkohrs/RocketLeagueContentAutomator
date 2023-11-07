@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 import tkinter as tk
 from tkinter import filedialog
 
-# Configuration
+# Config
 YOUTUBE_API_SERVICE_NAME = 'youtube'
 YOUTUBE_API_VERSION = 'v3'
 CLIENT_SECRETS_FILE = 'client_secret.json'
@@ -21,8 +21,9 @@ TAGS = " #shorts #RocketLeague #viral"
 LAST_USES_FILES_LIST = "files.txt"
 
 
-# Authentification à l'API YouTube
+# YouTube Auth
 def get_authenticated_service():
+    """YouTube Auth Service Usage."""
     credentials = None
     if os.path.exists('token.pickle'):
         with open('token.pickle', 'rb') as token:
@@ -38,9 +39,8 @@ def get_authenticated_service():
     return build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION, credentials=credentials)
 
 
-# Télécharger la vidéo sur YouTube
 def upload_video(youtube, filename, title = 'Mon clip Rocket League'):
-    """Upload a video to youtube"""
+    """Upload a video to youtube."""
     request = youtube.videos().insert(
         part='snippet,status',
         body={
@@ -48,7 +48,7 @@ def upload_video(youtube, filename, title = 'Mon clip Rocket League'):
                 'title': title,
                 'description': '#RocketLeague #shorts #clip #RL #YTshorts',
                 'tags': ['rocket league', 'clip'],
-                'categoryId': '20' # catégorie Jeux vidéo
+                'categoryId': '20' # VIDEO GAMES CATEGORY
             },
             'status': {
                 'privacyStatus': 'public'
@@ -67,7 +67,7 @@ def save_files(files):
             f.write(file + "\n")
 
 def load_files():
-    """Return a set of the files already seen"""
+    """Return the set of the files that didn't get uploaded."""
     if not os.path.exists(LAST_USES_FILES_LIST):
         return set()
     files = set()
@@ -76,8 +76,8 @@ def load_files():
             files.add(line[:-1])
     return files
 
-# Surveiller le dossier de clips
 def monitor_clip_directory(youtube, sleep_time=20):
+    """Check if any new clip got recorded in the clipping directory and launch the process if it's the case."""
     files_already_seen = load_files()
     print(f"Les fichiers déjà vus sont : {files_already_seen}")
     while True:
@@ -132,21 +132,17 @@ def getVideoTitle() -> str:
     """Choisit un titre au hasard depuis un fichier."""
     
     with open(AUTO_TITLE_LIST, 'r', encoding="utf-8") as file:
-        # Lire toutes les lignes du fichier dans une liste
         titles = file.readlines()
     
-    # Choisir un titre au hasard
     chosen_title = random.choice(titles)
-    # Supprimer premier et dernier caractère
+    # First and Last character are always ".
     chosen_title = chosen_title[1:-2]
     
-    return chosen_title.strip()  # Supprimer les espaces ou sauts de ligne superflus
+    return chosen_title.strip() 
 
 
 
-# Poster la vidéo sur YouTube
 if __name__ == '__main__':
-    # Poster la vidéo sur YouTube
     #Load from .env file
     load_dotenv()
     CLIP_DIR = os.getenv("CLIP_DIR")
@@ -160,10 +156,6 @@ if __name__ == '__main__':
             f.write(f"CLIP_DIR={CLIP_DIR}\n")  
             f.close()
     print(f"Le fichier séléctionné est : {CLIP_DIR}")
-
-
-
-
 
 
     youtube = None
