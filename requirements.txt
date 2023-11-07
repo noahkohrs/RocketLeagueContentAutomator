@@ -1,0 +1,6 @@
+moviepy>=1.0.3
+google-api-python-client>=2.0.2
+google-auth-httplib2>=0.1.0
+google-auth-oauthlib>=0.4.5
+python-dotenv>=0.19.2
+tk>=0.1.0
